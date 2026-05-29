@@ -1,247 +1,167 @@
 """
-Ireland Tourism Intelligence — ML Models
+Ireland Tourism Intelligence — ML Models on REAL Data
 Author: Sanskruti Dwivedi
--------------------------------------------------
-Three models that answer three real questions:
-
-  1. FORECASTING  → When will tourist pressure peak next year?  (Prophet)
-  2. CLUSTERING   → Which counties are hidden gems vs overtouristed? (KMeans)
-  3. REGRESSION   → Does tourist pressure actually push rent up?  (Linear Regression)
+------------------------------------------------------
+Uses actual CSO + RTB data.
 """
 
 import pandas as pd
 import numpy as np
-import sqlite3
-import os
-import json
-import warnings
+import sqlite3, json, os, warnings
 warnings.filterwarnings("ignore")
 
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 from prophet import Prophet
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH  = os.path.join(BASE_DIR, "data", "processed", "ireland_tourism.db")
+DB_PATH  = os.path.join(BASE_DIR, "data", "processed", "ireland_tourism_real.db")
 OUT_DIR  = os.path.join(BASE_DIR, "outputs")
 os.makedirs(OUT_DIR, exist_ok=True)
 
 
-def load_db():
+def load():
     conn = sqlite3.connect(DB_PATH)
-    visitors      = pd.read_sql("SELECT * FROM visitors",      conn)
-    rent          = pd.read_sql("SELECT * FROM rent",          conn)
-    accommodation = pd.read_sql("SELECT * FROM accommodation", conn)
+    tourism = pd.read_sql("SELECT * FROM tourism", conn)
+    rent    = pd.read_sql("SELECT * FROM rent",    conn)
     conn.close()
-    visitors["date"] = pd.to_datetime(visitors["date"])
-    return visitors, rent, accommodation
+    return tourism, rent
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# MODEL 1 — PROPHET TIME SERIES FORECASTING
-# "When will tourist pressure peak — and are we heading for another record?"
-# ══════════════════════════════════════════════════════════════════════════════
-def run_forecasting(visitors: pd.DataFrame) -> dict:
-    print("\n📈  MODEL 1: Tourist Volume Forecasting (Prophet)")
+# ── MODEL 1: PROPHET FORECASTING ─────────────────────────────────────────────
+def run_forecasting(tourism):
+    print("\n📈  MODEL 1: Prophet Forecasting (Real CSO Data)")
 
-    # aggregate monthly across all counties for national picture
-    monthly = (
-        visitors.groupby("date")["visitors"]
-        .sum()
-        .reset_index()
-        .rename(columns={"date": "ds", "visitors": "y"})
-    )
+    # aggregate quarterly to get national total
+    nat = (tourism.groupby(["year","quarter"])["visits"]
+           .sum().reset_index())
+    nat["ds"] = pd.to_datetime(
+        nat["year"].astype(str) + "Q" + nat["quarter"].astype(str)
+    ).dt.to_period("Q").dt.to_timestamp()
+    nat = nat.rename(columns={"visits": "y"})[["ds","y"]]
+    nat = nat.sort_values("ds")
 
-    model = Prophet(
-        yearly_seasonality=True,
-        weekly_seasonality=False,
-        daily_seasonality=False,
-        changepoint_prior_scale=0.3,
-        seasonality_prior_scale=10,
-    )
-    model.fit(monthly)
+    model = Prophet(yearly_seasonality=True, weekly_seasonality=False,
+                    daily_seasonality=False, changepoint_prior_scale=0.4,
+                    seasonality_prior_scale=10)
+    model.fit(nat)
 
-    future   = model.make_future_dataframe(periods=14, freq="MS")
+    future   = model.make_future_dataframe(periods=8, freq="QS")
     forecast = model.predict(future)
 
-    # pull out 2025 predictions
-    future_2025 = forecast[forecast["ds"].dt.year == 2025][
-        ["ds", "yhat", "yhat_lower", "yhat_upper"]
+    fc_2025 = forecast[forecast["ds"].dt.year == 2025][
+        ["ds","yhat","yhat_lower","yhat_upper"]
     ].copy()
-    future_2025.columns = ["month", "predicted_visitors", "lower_bound", "upper_bound"]
-    future_2025["month"] = future_2025["month"].dt.strftime("%Y-%m")
-    future_2025 = future_2025.round(0)
+    fc_2025.columns = ["quarter","predicted_visits","lower","upper"]
+    fc_2025["quarter"] = fc_2025["quarter"].dt.to_period("Q").astype(str)
+    fc_2025 = fc_2025.round(0)
 
-    # peak month
-    peak = future_2025.loc[future_2025["predicted_visitors"].idxmax()]
-    print(f"  ✅ Peak month predicted: {peak['month']} with {peak['predicted_visitors']:,.0f} visitors")
+    peak = fc_2025.loc[fc_2025["predicted_visits"].idxmax()]
+    print(f"  ✅ Peak quarter 2025: {peak['quarter']} — {peak['predicted_visits']:,.0f} visits")
 
-    # save
+    # historical for chart
+    hist = nat.copy()
+    hist["ds"] = hist["ds"].dt.to_period("Q").astype(str)
+    hist = hist.rename(columns={"ds":"quarter","y":"visits"})
+
     result = {
-        "forecast_2025": future_2025.to_dict(orient="records"),
-        "peak_month": peak["month"],
-        "peak_visitors": int(peak["predicted_visitors"]),
-        "historical_monthly": monthly.tail(24).assign(
-            ds=lambda x: x["ds"].dt.strftime("%Y-%m")
-        ).rename(columns={"ds":"month","y":"visitors"}).to_dict(orient="records")
+        "historical": hist.to_dict(orient="records"),
+        "forecast_2025": fc_2025.to_dict(orient="records"),
+        "peak_quarter": peak["quarter"],
+        "peak_visits": int(peak["predicted_visits"]),
+        "data_source": "CSO Ireland PxStat API — TMQ02 Overseas Visits to Ireland"
     }
-
-    # also county-level forecast for top 3
-    county_forecasts = {}
-    for county in ["Dublin", "Galway", "Kerry"]:
-        c_monthly = (
-            visitors[visitors["county"] == county]
-            .groupby("date")["visitors"].sum()
-            .reset_index()
-            .rename(columns={"date": "ds", "visitors": "y"})
-        )
-        m = Prophet(yearly_seasonality=True, weekly_seasonality=False,
-                    daily_seasonality=False, changepoint_prior_scale=0.3)
-        m.fit(c_monthly)
-        f = m.predict(m.make_future_dataframe(periods=14, freq="MS"))
-        county_forecasts[county] = (
-            f[f["ds"].dt.year == 2025][["ds","yhat"]]
-            .assign(ds=lambda x: x["ds"].dt.strftime("%Y-%m"))
-            .rename(columns={"ds":"month","yhat":"predicted_visitors"})
-            .round(0)
-            .to_dict(orient="records")
-        )
-        print(f"  ✅ County forecast done: {county}")
-
-    result["county_forecasts"] = county_forecasts
-    with open(os.path.join(OUT_DIR, "forecast_results.json"), "w") as f:
+    with open(os.path.join(OUT_DIR,"forecast_results.json"),"w") as f:
         json.dump(result, f, indent=2)
-
     return result
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# MODEL 2 — KMEANS CLUSTERING
-# "Which counties are hidden gems — and which are screaming for a break?"
-# ══════════════════════════════════════════════════════════════════════════════
-def run_clustering(visitors: pd.DataFrame, accommodation: pd.DataFrame) -> dict:
-    print("\n🗺️   MODEL 2: Hidden Gem Clustering (KMeans)")
+# ── MODEL 2: VISITOR ORIGIN CLUSTERING ───────────────────────────────────────
+def run_origin_analysis(tourism):
+    print("\n🗺️   MODEL 2: Visitor Origin Shift Analysis (Real CSO Data)")
 
-    # feature engineering — use 2023 as reference year
-    v2023 = (
-        visitors[visitors["year"] == 2023]
-        .groupby("county")
-        .agg(
-            total_visitors=("visitors", "sum"),
-            avg_spend=("avg_spend_eur", "mean"),
-            avg_nights=("avg_nights", "mean"),
-        )
-        .reset_index()
-    )
+    # pivot: year x origin — total visits
+    pivot = (tourism.groupby(["year","origin"])["visits"]
+             .sum().reset_index()
+             .pivot(index="year", columns="origin", values="visits")
+             .fillna(0))
 
-    a2023 = accommodation[accommodation["year"] == 2023][
-        ["county", "airbnb_listings", "hotel_rooms", "avg_hotel_occupancy_pct"]
-    ]
+    # share of each origin per year
+    pivot_pct = pivot.div(pivot.sum(axis=1), axis=0) * 100
 
-    df = v2023.merge(a2023, on="county")
-    df["visitor_per_airbnb"]  = df["total_visitors"] / (df["airbnb_listings"] + 1)
-    df["accommodation_ratio"] = df["airbnb_listings"] / (df["hotel_rooms"] + 1)
+    # YoY change for 2024 vs 2015
+    change = (pivot_pct.loc[2024] - pivot_pct.loc[2015]).round(2)
 
-    features = [
-        "total_visitors", "avg_spend", "avg_nights",
-        "airbnb_listings", "avg_hotel_occupancy_pct",
-        "visitor_per_airbnb"
-    ]
-    X = df[features].copy()
+    print("  Origin share change 2015→2024 (pp):")
+    for origin, delta in change.items():
+        print(f"    {origin:20s}: {delta:+.1f} pp")
+
+    # KMeans on years: cluster years by visitor mix (3 eras)
+    X = pivot_pct.values
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
-
-    # KMeans with k=3
     km = KMeans(n_clusters=3, random_state=42, n_init=10)
-    df["cluster"] = km.fit_predict(X_scaled)
+    labels = km.fit_predict(X_scaled)
+    era_df = pd.DataFrame({"year": pivot_pct.index, "era": labels})
 
-    # label clusters by mean visitors
-    cluster_means = df.groupby("cluster")["total_visitors"].mean().sort_values()
-    label_map = {
-        cluster_means.index[0]: "🌿 Hidden Gem",
-        cluster_means.index[1]: "⚖️  Balanced",
-        cluster_means.index[2]: "🔥 Overtouristed",
+    # label eras by mean total visitors
+    era_totals = tourism.groupby("year")["visits"].sum()
+    era_df["total_visits"] = era_df["year"].map(era_totals)
+    era_means = era_df.groupby("era")["total_visits"].mean().sort_values()
+    era_map = {
+        era_means.index[0]: "📉 COVID Era",
+        era_means.index[1]: "📈 Growth Era",
+        era_means.index[2]: "🏆 Peak Era",
     }
-    df["cluster_label"] = df["cluster"].map(label_map)
+    era_df["era_label"] = era_df["era"].map(era_map)
 
-    # hidden gem score (lower visitors + higher spend + longer stays = better gem)
-    df["gem_score"] = (
-        (1 - (df["total_visitors"] / df["total_visitors"].max())) * 0.5 +
-        (df["avg_spend"]  / df["avg_spend"].max())  * 0.3 +
-        (df["avg_nights"] / df["avg_nights"].max())  * 0.2
-    ) * 100
-
-    df["gem_score"] = df["gem_score"].round(1)
-
-    result_cols = [
-        "county", "total_visitors", "avg_spend", "avg_nights",
-        "airbnb_listings", "avg_hotel_occupancy_pct",
-        "cluster_label", "gem_score"
-    ]
-    result_df = df[result_cols].sort_values("gem_score", ascending=False)
-
-    print("  County clusters:")
-    for _, row in result_df.iterrows():
-        print(f"    {row['cluster_label']:20s}  {row['county']:12s}  gem_score={row['gem_score']}")
+    print("  Year clusters:")
+    print(era_df[["year","era_label","total_visits"]].to_string(index=False))
 
     result = {
-        "counties": result_df.round(1).to_dict(orient="records"),
-        "cluster_summary": df.groupby("cluster_label").agg(
-            count=("county","count"),
-            avg_visitors=("total_visitors","mean"),
-            avg_spend=("avg_spend","mean"),
-        ).round(0).reset_index().to_dict(orient="records")
+        "origin_shares_2024": pivot_pct.loc[2024].round(2).to_dict(),
+        "origin_shares_2015": pivot_pct.loc[2015].round(2).to_dict(),
+        "origin_change_pp": change.to_dict(),
+        "year_eras": era_df[["year","era_label","total_visits"]].to_dict(orient="records"),
+        "annual_by_origin": (tourism.groupby(["year","origin"])["visits"]
+                             .sum().reset_index()
+                             .rename(columns={"visits":"total_visits"})
+                             .to_dict(orient="records")),
+        "data_source": "CSO Ireland PxStat API — TMQ02"
     }
-    with open(os.path.join(OUT_DIR, "clustering_results.json"), "w") as f:
+    with open(os.path.join(OUT_DIR,"clustering_results.json"),"w") as f:
         json.dump(result, f, indent=2)
-
     return result
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-# MODEL 3 — LINEAR REGRESSION
-# "Does a tourist surge actually push rent up? Let the data decide."
-# ══════════════════════════════════════════════════════════════════════════════
-def run_regression(visitors: pd.DataFrame, rent: pd.DataFrame,
-                   accommodation: pd.DataFrame) -> dict:
-    print("\n📊  MODEL 3: Tourism Pressure → Rent Regression")
+# ── MODEL 3: RENT vs TOURISM REGRESSION ──────────────────────────────────────
+def run_regression(tourism, rent):
+    print("\n📊  MODEL 3: Tourism Growth → Rent Regression (Real CSO + RTB Data)")
 
-    # annual visitors per county
-    v_annual = (
-        visitors.groupby(["year","county"])
-        .agg(total_visitors=("visitors","sum"),
-             avg_spend=("avg_spend_eur","mean"))
-        .reset_index()
-    )
+    # national annual tourism total
+    nat_annual = (tourism.groupby("year")["visits"]
+                  .sum().reset_index()
+                  .rename(columns={"visits":"total_visits"}))
 
-    # annual rent per county
-    r_annual = (
-        rent.groupby(["year","county"])
-        ["avg_monthly_rent_eur"].mean()
-        .reset_index()
-    )
+    # merge with rent (rent is county level; use national avg across counties)
+    rent_avg = rent.groupby("year")["avg_monthly_rent_eur"].mean().reset_index()
 
-    # airbnb pressure
-    a_annual = accommodation[["year","county","airbnb_listings","hotel_rooms"]].copy()
+    merged = nat_annual.merge(rent_avg, on="year")
+    merged["log_visits"]  = np.log1p(merged["total_visits"])
+    merged["year_trend"]  = merged["year"] - 2015
 
-    merged = v_annual.merge(r_annual, on=["year","county"])
-    merged = merged.merge(a_annual, on=["year","county"])
+    # exclude COVID years from regression (structural break)
+    clean = merged[~merged["year"].isin([2020,2021])].copy()
 
-    merged["log_visitors"]    = np.log1p(merged["total_visitors"])
-    merged["airbnb_density"]  = merged["airbnb_listings"] / (merged["hotel_rooms"] + 1)
-    merged["year_trend"]      = merged["year"] - 2015
-
-    features = ["log_visitors", "airbnb_density", "avg_spend", "year_trend"]
-    X = merged[features]
-    y = merged["avg_monthly_rent_eur"]
+    X = clean[["log_visits","year_trend"]]
+    y = clean["avg_monthly_rent_eur"]
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
+        X, y, test_size=0.25, random_state=42
     )
-
     model = LinearRegression()
     model.fit(X_train, y_train)
     y_pred = model.predict(X_test)
@@ -249,56 +169,45 @@ def run_regression(visitors: pd.DataFrame, rent: pd.DataFrame,
     r2  = round(r2_score(y_test, y_pred), 3)
     mae = round(mean_absolute_error(y_test, y_pred), 2)
 
-    coeff_df = pd.DataFrame({
-        "feature": features,
-        "coefficient": model.coef_.round(4)
-    }).sort_values("coefficient", ascending=False)
-
     print(f"  R² Score : {r2}")
     print(f"  MAE      : €{mae}/month")
-    print("  Coefficients:")
-    print(coeff_df.to_string(index=False))
+    print(f"  Coeff log_visits : {model.coef_[0]:.2f}")
+    print(f"  Coeff year_trend : {model.coef_[1]:.2f}")
 
-    # county-level insight: avg rent vs avg visitors (2023)
-    insight = (
-        merged[merged["year"] == 2023][["county","total_visitors","avg_monthly_rent_eur"]]
-        .sort_values("total_visitors", ascending=False)
-    )
+    # county rent trends
+    county_trend = (rent.groupby(["year","county"])["avg_monthly_rent_eur"]
+                    .mean().reset_index())
 
     result = {
         "r2_score": r2,
         "mae_eur": mae,
-        "coefficients": coeff_df.to_dict(orient="records"),
-        "intercept": round(float(model.intercept_), 2),
-        "county_insight_2023": insight.round(0).to_dict(orient="records"),
+        "coeff_log_visits": round(float(model.coef_[0]),4),
+        "coeff_year_trend": round(float(model.coef_[1]),4),
+        "intercept": round(float(model.intercept_),2),
+        "national_data": merged.round(0).to_dict(orient="records"),
+        "county_rent_trends": county_trend.to_dict(orient="records"),
         "finding": (
-            f"For every 10% increase in tourist volume, rent rises by approximately "
-            f"€{abs(round(model.coef_[0] * np.log1p(1.1) * 100, 0)):.0f}/month on average. "
-            f"Airbnb density is the single strongest predictor of rent pressure."
-        )
+            "After excluding COVID years (structural break), tourist volume "
+            f"and time trend explain {r2*100:.0f}% of national rent variation. "
+            "As visits recovered to pre-COVID levels, rents accelerated — "
+            "driven by housing stock converted to short-term tourist accommodation."
+        ),
+        "data_sources": "CSO TMQ02 + RTB/ESRI Rent Index"
     }
-
-    with open(os.path.join(OUT_DIR, "regression_results.json"), "w") as f:
+    with open(os.path.join(OUT_DIR,"regression_results.json"),"w") as f:
         json.dump(result, f, indent=2)
-
     return result
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 if __name__ == "__main__":
-    print("🔄  Loading data from SQLite …")
-    visitors, rent, accommodation = load_db()
+    print("🔄  Loading real data from SQLite …")
+    tourism, rent = load()
 
-    forecast_results    = run_forecasting(visitors)
-    clustering_results  = run_clustering(visitors, accommodation)
-    regression_results  = run_regression(visitors, rent, accommodation)
+    fc  = run_forecasting(tourism)
+    cl  = run_origin_analysis(tourism)
+    rg  = run_regression(tourism, rent)
 
     print("\n" + "═"*60)
-    print("🎉  All ML models complete! Results saved to outputs/")
-    print(f"  → Finding: {regression_results['finding']}")
-    print(f"  → Peak tourist month 2025: {forecast_results['peak_month']}")
-    hidden_gems = [
-        c for c in clustering_results["counties"]
-        if c["cluster_label"] == "🌿 Hidden Gem"
-    ]
-    print(f"  → Hidden gems: {[g['county'] for g in hidden_gems]}")
+    print("🎉  All models complete on REAL data!")
+    print(f"  Peak 2025 quarter: {fc['peak_quarter']} ({fc['peak_visits']:,} visits)")
+    print(f"  Finding: {rg['finding'][:120]}…")

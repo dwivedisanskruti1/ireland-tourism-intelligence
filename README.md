@@ -141,7 +141,7 @@ Target: national average monthly rent
 MSc Business Analytics, University of Galway (2025–26)  
 BSc Data Science, Thakur College of Science & Commerce (CGPA: 8.68)
 
-📧 dwivedisanskruti10@gmail.com | 🔗 [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi)
+📧 dwivedisanskruti10@gmail.com | 🔗 [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi-01b179244/)
 
 ---
 *Tourism data: CSO Ireland TMQ02 via PxStat API (CC-BY 4.0)*  

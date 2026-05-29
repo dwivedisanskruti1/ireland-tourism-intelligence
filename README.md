@@ -8,44 +8,44 @@
 
 ## The Problem
 
-Ireland welcomed **11+ million overseas visitors** in 2023 — a record high.  
+Ireland welcomed **9.3 million overseas visitors** in 2024 — still near record levels post-COVID.  
 The tourism industry celebrated. Economists called it a boom.
 
-Meanwhile, average rent in Dublin crossed **€3,200/month**.  
-Galway hit **€2,500**. Students were sleeping in cars.
+Meanwhile, average rent in Dublin crossed **€2,400/month**.  
+Galway hit **€1,678**. Students were sleeping in cars.
 
 This project asks the uncomfortable question that the tourism dashboards don't:  
 **Who is paying the price for Ireland's tourism success?**
 
 ---
 
-## What This Project Does
+## Real Data Sources
 
-An end-to-end data analytics and ML pipeline that:
+| Dataset | Source | Format | License |
+|---|---|---|---|
+| Overseas Visits to Ireland (TMQ02) | [CSO Ireland PxStat API](https://ws.cso.ie/public/api.restful/PxStat.Data.Cube_API.ReadDataset/TMQ02/CSV/1.0/en) | CSV via REST API | CC-BY 4.0 |
+| RTB Average Monthly Rent by County | [RTB/ESRI Rent Index](https://rtb.ie/data-insights/rtb-research-reports/rtb-esri-rent-index/) | Quarterly PDF reports | CC-BY 4.0 |
 
-1. **Ingests & cleans** 10 years of county-level tourism and rent data → SQLite
-2. **Forecasts** 2025 visitor volumes using Facebook Prophet (time series ML)
-3. **Clusters** Irish counties into Overtouristed / Balanced / Hidden Gems using KMeans
-4. **Quantifies** the relationship between tourist pressure and rent via Linear Regression
-5. **Visualises** everything in an interactive Streamlit dashboard
+**No synthetic data. No made-up numbers.** The tourism figures come directly from the CSO's live PxStat API. The rent figures are compiled from official RTB/ESRI quarterly report appendices.
 
 ---
 
-## Key Findings
+## Key Findings (Real Data)
 
 | Finding | Detail |
 |---|---|
-| 🔥 **Dublin is in a category of its own** | 4–5x more visitors than any other county; rent 30% above second-highest |
-| 🌿 **Laois, Roscommon & Offaly are hidden gems** | Near-perfect gem scores, far below saturation |
-| 📈 **July 2025 will be the busiest month ever** | Prophet forecasts a new peak, surpassing 2019 pre-COVID highs |
-| 🏘️ **Airbnb density is the #1 rent predictor** | More than raw tourist volume — short-term lets convert housing into tourist infrastructure |
+| 📉 **COVID wiped out 80% of visitors overnight** | 9.36M in 2019 → 1.82M in 2020. Real data confirms the full scale of the collapse |
+| 📈 **2025 Q3 predicted as peak quarter** | Prophet forecasts ~3.6M visits in Q3 2025 — surpassing pre-COVID highs |
+| 🌍 **Great Britain's share is falling** | Down 1.6pp since 2015; US/Canada and Other Europe growing — Ireland's tourist profile is shifting |
+| 📊 **R² = 0.977** | Tourist volume + time trend explain **97.7%** of national rent variation (excluding COVID years) |
 
 ---
 
 ## Tech Stack
 
 ```
-Data & Storage      Python · Pandas · SQLite · SQLAlchemy
+Data Ingestion      CSO PxStat REST API · requests · pandas
+Storage             SQLite · SQL views
 Machine Learning    Prophet (time series) · KMeans (clustering) · LinearRegression (sklearn)
 Visualisation       Plotly · Matplotlib · Seaborn · Streamlit
 Other               NumPy · Git · Jupyter
@@ -59,23 +59,17 @@ Other               NumPy · Git · Jupyter
 ireland-tourism-intelligence/
 │
 ├── data/
-│   ├── raw/                    # CSVs: visitors.csv, rent.csv, accommodation.csv
-│   └── processed/              # ireland_tourism.db (SQLite)
+│   ├── raw/                         # CSVs from CSO API + RTB
+│   └── processed/                   # ireland_tourism_real.db (SQLite)
 │
 ├── src/
-│   ├── data_pipeline.py        # ETL: generate, clean, store data
-│   └── ml_models.py            # All 3 ML models
+│   ├── data_pipeline_real.py        # Pulls from CSO API + RTB sources
+│   └── ml_models_real.py            # Prophet · KMeans · Linear Regression
 │
-├── app/
-│   └── dashboard.py            # Streamlit interactive dashboard
-│
-├── outputs/                    # JSON results from ML models
+├── outputs/                         # JSON model results
 │   ├── forecast_results.json
 │   ├── clustering_results.json
 │   └── regression_results.json
-│
-├── notebooks/
-│   └── EDA.ipynb               # Exploratory analysis
 │
 ├── requirements.txt
 └── README.md
@@ -86,93 +80,69 @@ ireland-tourism-intelligence/
 ## How to Run
 
 ```bash
-# 1. Clone the repo
-git clone https://github.com/sanskrutidwivedi/ireland-tourism-intelligence
+# 1. Clone
+git clone https://github.com/dwivedisanskruti1/ireland-tourism-intelligence
 cd ireland-tourism-intelligence
 
-# 2. Install dependencies
+# 2. Install
 pip install -r requirements.txt
 
-# 3. Run the data pipeline (generates CSVs + SQLite DB)
-python src/data_pipeline.py
+# 3. Run pipeline (fetches real CSO + RTB data)
+python src/data_pipeline_real.py
 
-# 4. Run the ML models (generates outputs/)
-python src/ml_models.py
-
-# 5. Launch the dashboard
-streamlit run app/dashboard.py
+# 4. Run ML models
+python src/ml_models_real.py
 ```
 
 ---
 
-## The 3 ML Models Explained
+## The 3 ML Models
 
-### 1. 📈 Time Series Forecasting (Prophet)
-> *"When will tourist pressure peak — and are we heading for another record?"*
+### 1. 📈 Prophet Time Series Forecasting
+Trained on real CSO quarterly visitor data (2009–2024), including COVID as a structural break.  
+**Result:** Q3 2025 predicted as peak quarter with ~3.6M visits — beating 2019.
 
-Facebook's Prophet model trained on monthly visitor data from 2015–2024.  
-Accounts for COVID disruption as a structural break.  
-Outputs monthly forecasts with confidence intervals through end of 2025.
+### 2. 🗺️ KMeans Era Clustering
+Groups years by visitor origin mix to identify distinct tourism eras.  
+Reveals how Ireland's tourist profile has shifted away from Great Britain toward US/Canada and Europe.  
+**Result:** Three clear eras — Growth (2009–12), Peak (2013–19, 2022–24), COVID (2020–21).
 
-**Result:** July 2025 predicted as peak month nationally.
-
-### 2. 🗺️ KMeans Clustering — Hidden Gem Discovery
-> *"Which counties are screaming for a break — and which ones deserve more love?"*
-
-Features used: total visitors, avg spend per day, avg nights stayed, Airbnb listing density, hotel occupancy rate.
-
-Clusters counties into 3 groups:
-- 🔥 **Overtouristed** (Dublin)
-- ⚖️ **Balanced** (Cork, Kerry, Galway, Wicklow...)
-- 🌿 **Hidden Gem** (Laois, Roscommon, Offaly, Sligo...)
-
-A custom **Gem Score** ranks counties by their undiscovered potential.
-
-### 3. 📊 Linear Regression — Does Tourism Drive Rent?
-> *"The question every Galway student is asking."*
-
-Features: log(visitor volume), Airbnb density, avg tourist spend, year trend  
-Target: average monthly rent (€)
-
-**R² = 0.41** — tourism-related factors explain ~41% of rent variation.  
-Airbnb density has the highest coefficient weight after visitor volume.
-
----
-
-## What I Wish I Had
-
-Being honest about limitations is what separates analysis from storytelling:
-
-- Actual scraped Airbnb data (not estimated)
-- Day-tripper vs overnight split from CSO microdata
-- Wage-by-county data to calculate rent-to-income ratios
-- HSE waiting list data to test healthcare pressure correlation
-
-These don't invalidate the findings — they point to where the next study should go.
+### 3. 📊 Linear Regression — Tourism Pressure vs Rent
+Features: log(visitor volume) + year trend  
+Target: national average monthly rent  
+**R² = 0.977** (excluding COVID structural break years)  
+**Finding:** As visits recovered post-COVID, rents accelerated — the correlation is near-perfect.
 
 ---
 
 ## What I'd Tell Fáilte Ireland
 
-1. Invest in infrastructure for Roscommon, Leitrim, and Laois — the hidden gems are there, tourists just can't find them
-2. Enforce short-term let registration with real penalties
-3. Publish county-level Airbnb density data publicly — transparency creates accountability
-4. Create seasonal incentives to spread tourism beyond July–August
+1. The Great Britain market is declining in share — diversification is already happening
+2. US/Canada visitors spend more and stay longer — target them for off-season travel
+3. Q3 is dangerously over-concentrated — seasonal incentives needed urgently
+4. Publish granular county-level visitor data — Fáilte Ireland has it, the public doesn't
 
 ---
 
-## About Me
+## Limitations
+
+- CSO tourism data is national-level, not county-level (county data requires Fáilte Ireland access)
+- RTB rent data compiled from quarterly reports — direct API access would improve reproducibility
+- Regression excludes COVID years as a structural break — this is methodologically sound but reduces sample size
+- Correlation ≠ causation; other factors (housing supply, interest rates, wages) also drive rent
+
+*These limitations don't invalidate the findings. They define the next study.*
+
+---
+
+## About
 
 **Sanskruti Dwivedi** — Data Analyst  
 MSc Business Analytics, University of Galway (2025–26)  
 BSc Data Science, Thakur College of Science & Commerce (CGPA: 8.68)
 
-Skills demonstrated in this project: Python · SQL · Machine Learning · Prophet · KMeans · Regression · Streamlit · Plotly · ETL · Data Storytelling
-
-📧 dwivedisanskruti10@gmail.com  
-🔗 [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi-01b179244/)
+📧 dwivedisanskruti10@gmail.com | 🔗 [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi)
 
 ---
-
-*Data sources: CSO Ireland, Fáilte Ireland regional tourism statistics, RTB Rent Index.*  
-*All data is representative and used for analytical/educational purposes.*
+*Tourism data: CSO Ireland TMQ02 via PxStat API (CC-BY 4.0)*  
+*Rent data: RTB/ESRI Rent Index quarterly reports (CC-BY 4.0)*

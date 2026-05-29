@@ -170,7 +170,7 @@ BSc Data Science, Thakur College of Science & Commerce (CGPA: 8.68)
 Skills demonstrated in this project: Python · SQL · Machine Learning · Prophet · KMeans · Regression · Streamlit · Plotly · ETL · Data Storytelling
 
 📧 dwivedisanskruti10@gmail.com  
-🔗 [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi)
+🔗 [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi-01b179244/)
 
 ---
 

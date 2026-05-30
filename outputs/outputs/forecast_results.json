@@ -1,0 +1,290 @@
+{
+  "historical": [
+    {
+      "quarter": "2009Q1",
+      "visits": 1271000
+    },
+    {
+      "quarter": "2009Q2",
+      "visits": 1833000
+    },
+    {
+      "quarter": "2009Q3",
+      "visits": 2170000
+    },
+    {
+      "quarter": "2009Q4",
+      "visits": 1361000
+    },
+    {
+      "quarter": "2010Q1",
+      "visits": 1259000
+    },
+    {
+      "quarter": "2010Q2",
+      "visits": 1850000
+    },
+    {
+      "quarter": "2010Q3",
+      "visits": 2216000
+    },
+    {
+      "quarter": "2010Q4",
+      "visits": 1405000
+    },
+    {
+      "quarter": "2011Q1",
+      "visits": 1322000
+    },
+    {
+      "quarter": "2011Q2",
+      "visits": 1937000
+    },
+    {
+      "quarter": "2011Q3",
+      "visits": 2324000
+    },
+    {
+      "quarter": "2011Q4",
+      "visits": 1467000
+    },
+    {
+      "quarter": "2012Q1",
+      "visits": 1369000
+    },
+    {
+      "quarter": "2012Q2",
+      "visits": 2005000
+    },
+    {
+      "quarter": "2012Q3",
+      "visits": 2425000
+    },
+    {
+      "quarter": "2012Q4",
+      "visits": 1523000
+    },
+    {
+      "quarter": "2013Q1",
+      "visits": 1417000
+    },
+    {
+      "quarter": "2013Q2",
+      "visits": 2086000
+    },
+    {
+      "quarter": "2013Q3",
+      "visits": 2520000
+    },
+    {
+      "quarter": "2013Q4",
+      "visits": 1577000
+    },
+    {
+      "quarter": "2014Q1",
+      "visits": 1485000
+    },
+    {
+      "quarter": "2014Q2",
+      "visits": 2179000
+    },
+    {
+      "quarter": "2014Q3",
+      "visits": 2653000
+    },
+    {
+      "quarter": "2014Q4",
+      "visits": 1656000
+    },
+    {
+      "quarter": "2015Q1",
+      "visits": 1535000
+    },
+    {
+      "quarter": "2015Q2",
+      "visits": 2257000
+    },
+    {
+      "quarter": "2015Q3",
+      "visits": 2750000
+    },
+    {
+      "quarter": "2015Q4",
+      "visits": 1719000
+    },
+    {
+      "quarter": "2016Q1",
+      "visits": 1587000
+    },
+    {
+      "quarter": "2016Q2",
+      "visits": 2329000
+    },
+    {
+      "quarter": "2016Q3",
+      "visits": 2843000
+    },
+    {
+      "quarter": "2016Q4",
+      "visits": 1773000
+    },
+    {
+      "quarter": "2017Q1",
+      "visits": 1639000
+    },
+    {
+      "quarter": "2017Q2",
+      "visits": 2402000
+    },
+    {
+      "quarter": "2017Q3",
+      "visits": 2936000
+    },
+    {
+      "quarter": "2017Q4",
+      "visits": 1831000
+    },
+    {
+      "quarter": "2018Q1",
+      "visits": 1691000
+    },
+    {
+      "quarter": "2018Q2",
+      "visits": 2475000
+    },
+    {
+      "quarter": "2018Q3",
+      "visits": 3027000
+    },
+    {
+      "quarter": "2018Q4",
+      "visits": 1887000
+    },
+    {
+      "quarter": "2019Q1",
+      "visits": 1743000
+    },
+    {
+      "quarter": "2019Q2",
+      "visits": 2549000
+    },
+    {
+      "quarter": "2019Q3",
+      "visits": 3119000
+    },
+    {
+      "quarter": "2019Q4",
+      "visits": 1945000
+    },
+    {
+      "quarter": "2020Q1",
+      "visits": 1200000
+    },
+    {
+      "quarter": "2020Q2",
+      "visits": 67000
+    },
+    {
+      "quarter": "2020Q3",
+      "visits": 358000
+    },
+    {
+      "quarter": "2020Q4",
+      "visits": 198000
+    },
+    {
+      "quarter": "2021Q1",
+      "visits": 91000
+    },
+    {
+      "quarter": "2021Q2",
+      "visits": 240000
+    },
+    {
+      "quarter": "2021Q3",
+      "visits": 1064000
+    },
+    {
+      "quarter": "2021Q4",
+      "visits": 1046000
+    },
+    {
+      "quarter": "2022Q1",
+      "visits": 1208000
+    },
+    {
+      "quarter": "2022Q2",
+      "visits": 2025000
+    },
+    {
+      "quarter": "2022Q3",
+      "visits": 2735000
+    },
+    {
+      "quarter": "2022Q4",
+      "visits": 1713000
+    },
+    {
+      "quarter": "2023Q1",
+      "visits": 1670000
+    },
+    {
+      "quarter": "2023Q2",
+      "visits": 2480000
+    },
+    {
+      "quarter": "2023Q3",
+      "visits": 3077000
+    },
+    {
+      "quarter": "2023Q4",
+      "visits": 1863000
+    },
+    {
+      "quarter": "2024Q1",
+      "visits": 1713000
+    },
+    {
+      "quarter": "2024Q2",
+      "visits": 2530000
+    },
+    {
+      "quarter": "2024Q3",
+      "visits": 3125000
+    },
+    {
+      "quarter": "2024Q4",
+      "visits": 1894000
+    }
+  ],
+  "forecast_2025": [
+    {
+      "quarter": "2025Q1",
+      "predicted_visits": 1865220,
+      "lower": 1716002,
+      "upper": 2014437
+    },
+    {
+      "quarter": "2025Q2",
+      "predicted_visits": 2581505,
+      "lower": 2374985,
+      "upper": 2788026
+    },
+    {
+      "quarter": "2025Q3",
+      "predicted_visits": 3080291,
+      "lower": 2833868,
+      "upper": 3326715
+    },
+    {
+      "quarter": "2025Q4",
+      "predicted_visits": 2058434,
+      "lower": 1893759,
+      "upper": 2223109
+    }
+  ],
+  "peak_quarter": "2025Q3",
+  "peak_visits": 3080291,
+  "model": "Seasonal Linear Regression (sklearn)",
+  "data_source": "CSO Ireland PxStat API \u2014 TMQ02 Overseas Visits to Ireland"
+}

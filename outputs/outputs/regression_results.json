@@ -1,0 +1,1083 @@
+{
+  "r2_score": 0.977,
+  "mae_eur": 20.06,
+  "coeff_log_visits": 314.6344,
+  "coeff_year_trend": 52.9245,
+  "intercept": -4227.18,
+  "national_data": [
+    {
+      "year": 2015,
+      "total_visits": 8261000,
+      "avg_monthly_rent_eur": 785.0,
+      "log_visits": 16.0,
+      "year_trend": 0
+    },
+    {
+      "year": 2016,
+      "total_visits": 8532000,
+      "avg_monthly_rent_eur": 841.0,
+      "log_visits": 16.0,
+      "year_trend": 1
+    },
+    {
+      "year": 2017,
+      "total_visits": 8808000,
+      "avg_monthly_rent_eur": 908.0,
+      "log_visits": 16.0,
+      "year_trend": 2
+    },
+    {
+      "year": 2018,
+      "total_visits": 9080000,
+      "avg_monthly_rent_eur": 972.0,
+      "log_visits": 16.0,
+      "year_trend": 3
+    },
+    {
+      "year": 2019,
+      "total_visits": 9356000,
+      "avg_monthly_rent_eur": 1037.0,
+      "log_visits": 16.0,
+      "year_trend": 4
+    },
+    {
+      "year": 2020,
+      "total_visits": 1823000,
+      "avg_monthly_rent_eur": 1049.0,
+      "log_visits": 14.0,
+      "year_trend": 5
+    },
+    {
+      "year": 2021,
+      "total_visits": 2441000,
+      "avg_monthly_rent_eur": 1092.0,
+      "log_visits": 15.0,
+      "year_trend": 6
+    },
+    {
+      "year": 2022,
+      "total_visits": 7681000,
+      "avg_monthly_rent_eur": 1166.0,
+      "log_visits": 16.0,
+      "year_trend": 7
+    },
+    {
+      "year": 2023,
+      "total_visits": 9090000,
+      "avg_monthly_rent_eur": 1239.0,
+      "log_visits": 16.0,
+      "year_trend": 8
+    },
+    {
+      "year": 2024,
+      "total_visits": 9262000,
+      "avg_monthly_rent_eur": 1295.0,
+      "log_visits": 16.0,
+      "year_trend": 9
+    }
+  ],
+  "county_rent_trends": [
+    {
+      "year": 2015,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 756.0
+    },
+    {
+      "year": 2015,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 921.0
+    },
+    {
+      "year": 2015,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 589.0
+    },
+    {
+      "year": 2015,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 1397.0
+    },
+    {
+      "year": 2015,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 956.0
+    },
+    {
+      "year": 2015,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 812.0
+    },
+    {
+      "year": 2015,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1067.0
+    },
+    {
+      "year": 2015,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 698.0
+    },
+    {
+      "year": 2015,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 601.0
+    },
+    {
+      "year": 2015,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 534.0
+    },
+    {
+      "year": 2015,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 789.0
+    },
+    {
+      "year": 2015,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 634.0
+    },
+    {
+      "year": 2015,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1034.0
+    },
+    {
+      "year": 2015,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 589.0
+    },
+    {
+      "year": 2015,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 567.0
+    },
+    {
+      "year": 2015,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 612.0
+    },
+    {
+      "year": 2015,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 623.0
+    },
+    {
+      "year": 2015,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 712.0
+    },
+    {
+      "year": 2015,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 678.0
+    },
+    {
+      "year": 2015,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1134.0
+    },
+    {
+      "year": 2016,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 812.0
+    },
+    {
+      "year": 2016,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 989.0
+    },
+    {
+      "year": 2016,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 623.0
+    },
+    {
+      "year": 2016,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 1528.0
+    },
+    {
+      "year": 2016,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1034.0
+    },
+    {
+      "year": 2016,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 867.0
+    },
+    {
+      "year": 2016,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1145.0
+    },
+    {
+      "year": 2016,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 745.0
+    },
+    {
+      "year": 2016,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 645.0
+    },
+    {
+      "year": 2016,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 567.0
+    },
+    {
+      "year": 2016,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 845.0
+    },
+    {
+      "year": 2016,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 678.0
+    },
+    {
+      "year": 2016,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1112.0
+    },
+    {
+      "year": 2016,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 623.0
+    },
+    {
+      "year": 2016,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 601.0
+    },
+    {
+      "year": 2016,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 656.0
+    },
+    {
+      "year": 2016,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 667.0
+    },
+    {
+      "year": 2016,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 756.0
+    },
+    {
+      "year": 2016,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 723.0
+    },
+    {
+      "year": 2016,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1212.0
+    },
+    {
+      "year": 2017,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 878.0
+    },
+    {
+      "year": 2017,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1067.0
+    },
+    {
+      "year": 2017,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 667.0
+    },
+    {
+      "year": 2017,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 1697.0
+    },
+    {
+      "year": 2017,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1123.0
+    },
+    {
+      "year": 2017,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 934.0
+    },
+    {
+      "year": 2017,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1234.0
+    },
+    {
+      "year": 2017,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 798.0
+    },
+    {
+      "year": 2017,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 689.0
+    },
+    {
+      "year": 2017,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 612.0
+    },
+    {
+      "year": 2017,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 912.0
+    },
+    {
+      "year": 2017,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 723.0
+    },
+    {
+      "year": 2017,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1201.0
+    },
+    {
+      "year": 2017,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 667.0
+    },
+    {
+      "year": 2017,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 645.0
+    },
+    {
+      "year": 2017,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 701.0
+    },
+    {
+      "year": 2017,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 712.0
+    },
+    {
+      "year": 2017,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 812.0
+    },
+    {
+      "year": 2017,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 778.0
+    },
+    {
+      "year": 2017,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1301.0
+    },
+    {
+      "year": 2018,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 945.0
+    },
+    {
+      "year": 2018,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1145.0
+    },
+    {
+      "year": 2018,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 712.0
+    },
+    {
+      "year": 2018,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 1834.0
+    },
+    {
+      "year": 2018,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1212.0
+    },
+    {
+      "year": 2018,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1001.0
+    },
+    {
+      "year": 2018,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1323.0
+    },
+    {
+      "year": 2018,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 851.0
+    },
+    {
+      "year": 2018,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 734.0
+    },
+    {
+      "year": 2018,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 656.0
+    },
+    {
+      "year": 2018,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 978.0
+    },
+    {
+      "year": 2018,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 767.0
+    },
+    {
+      "year": 2018,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1289.0
+    },
+    {
+      "year": 2018,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 712.0
+    },
+    {
+      "year": 2018,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 689.0
+    },
+    {
+      "year": 2018,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 745.0
+    },
+    {
+      "year": 2018,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 756.0
+    },
+    {
+      "year": 2018,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 867.0
+    },
+    {
+      "year": 2018,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 834.0
+    },
+    {
+      "year": 2018,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1389.0
+    },
+    {
+      "year": 2019,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 1012.0
+    },
+    {
+      "year": 2019,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1223.0
+    },
+    {
+      "year": 2019,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 756.0
+    },
+    {
+      "year": 2019,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 1976.0
+    },
+    {
+      "year": 2019,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1301.0
+    },
+    {
+      "year": 2019,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1067.0
+    },
+    {
+      "year": 2019,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1412.0
+    },
+    {
+      "year": 2019,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 904.0
+    },
+    {
+      "year": 2019,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 778.0
+    },
+    {
+      "year": 2019,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 701.0
+    },
+    {
+      "year": 2019,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 1045.0
+    },
+    {
+      "year": 2019,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 812.0
+    },
+    {
+      "year": 2019,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1378.0
+    },
+    {
+      "year": 2019,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 756.0
+    },
+    {
+      "year": 2019,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 734.0
+    },
+    {
+      "year": 2019,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 789.0
+    },
+    {
+      "year": 2019,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 801.0
+    },
+    {
+      "year": 2019,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 923.0
+    },
+    {
+      "year": 2019,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 889.0
+    },
+    {
+      "year": 2019,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1478.0
+    },
+    {
+      "year": 2020,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 1023.0
+    },
+    {
+      "year": 2020,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1234.0
+    },
+    {
+      "year": 2020,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 767.0
+    },
+    {
+      "year": 2020,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 2012.0
+    },
+    {
+      "year": 2020,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1312.0
+    },
+    {
+      "year": 2020,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1078.0
+    },
+    {
+      "year": 2020,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1423.0
+    },
+    {
+      "year": 2020,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 912.0
+    },
+    {
+      "year": 2020,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 789.0
+    },
+    {
+      "year": 2020,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 712.0
+    },
+    {
+      "year": 2020,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 1056.0
+    },
+    {
+      "year": 2020,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 823.0
+    },
+    {
+      "year": 2020,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1389.0
+    },
+    {
+      "year": 2020,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 767.0
+    },
+    {
+      "year": 2020,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 745.0
+    },
+    {
+      "year": 2020,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 798.0
+    },
+    {
+      "year": 2020,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 812.0
+    },
+    {
+      "year": 2020,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 934.0
+    },
+    {
+      "year": 2020,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 898.0
+    },
+    {
+      "year": 2020,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1489.0
+    },
+    {
+      "year": 2021,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 1067.0
+    },
+    {
+      "year": 2021,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1289.0
+    },
+    {
+      "year": 2021,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 798.0
+    },
+    {
+      "year": 2021,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 2067.0
+    },
+    {
+      "year": 2021,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1378.0
+    },
+    {
+      "year": 2021,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1123.0
+    },
+    {
+      "year": 2021,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1478.0
+    },
+    {
+      "year": 2021,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 956.0
+    },
+    {
+      "year": 2021,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 823.0
+    },
+    {
+      "year": 2021,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 745.0
+    },
+    {
+      "year": 2021,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 1101.0
+    },
+    {
+      "year": 2021,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 856.0
+    },
+    {
+      "year": 2021,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1445.0
+    },
+    {
+      "year": 2021,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 801.0
+    },
+    {
+      "year": 2021,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 778.0
+    },
+    {
+      "year": 2021,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 834.0
+    },
+    {
+      "year": 2021,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 845.0
+    },
+    {
+      "year": 2021,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 978.0
+    },
+    {
+      "year": 2021,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 934.0
+    },
+    {
+      "year": 2021,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1545.0
+    },
+    {
+      "year": 2022,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 1145.0
+    },
+    {
+      "year": 2022,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1378.0
+    },
+    {
+      "year": 2022,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 856.0
+    },
+    {
+      "year": 2022,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 2198.0
+    },
+    {
+      "year": 2022,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1489.0
+    },
+    {
+      "year": 2022,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1201.0
+    },
+    {
+      "year": 2022,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1567.0
+    },
+    {
+      "year": 2022,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 1023.0
+    },
+    {
+      "year": 2022,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 878.0
+    },
+    {
+      "year": 2022,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 801.0
+    },
+    {
+      "year": 2022,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 1178.0
+    },
+    {
+      "year": 2022,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 912.0
+    },
+    {
+      "year": 2022,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1534.0
+    },
+    {
+      "year": 2022,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 856.0
+    },
+    {
+      "year": 2022,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 834.0
+    },
+    {
+      "year": 2022,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 889.0
+    },
+    {
+      "year": 2022,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 901.0
+    },
+    {
+      "year": 2022,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 1045.0
+    },
+    {
+      "year": 2022,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 1001.0
+    },
+    {
+      "year": 2022,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1634.0
+    },
+    {
+      "year": 2023,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 1223.0
+    },
+    {
+      "year": 2023,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1467.0
+    },
+    {
+      "year": 2023,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 912.0
+    },
+    {
+      "year": 2023,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 2312.0
+    },
+    {
+      "year": 2023,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1601.0
+    },
+    {
+      "year": 2023,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1278.0
+    },
+    {
+      "year": 2023,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1656.0
+    },
+    {
+      "year": 2023,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 1089.0
+    },
+    {
+      "year": 2023,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 934.0
+    },
+    {
+      "year": 2023,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 856.0
+    },
+    {
+      "year": 2023,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 1256.0
+    },
+    {
+      "year": 2023,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 967.0
+    },
+    {
+      "year": 2023,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1623.0
+    },
+    {
+      "year": 2023,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 912.0
+    },
+    {
+      "year": 2023,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 889.0
+    },
+    {
+      "year": 2023,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 945.0
+    },
+    {
+      "year": 2023,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 956.0
+    },
+    {
+      "year": 2023,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 1112.0
+    },
+    {
+      "year": 2023,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 1067.0
+    },
+    {
+      "year": 2023,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1723.0
+    },
+    {
+      "year": 2024,
+      "county": "Clare",
+      "avg_monthly_rent_eur": 1289.0
+    },
+    {
+      "year": 2024,
+      "county": "Cork",
+      "avg_monthly_rent_eur": 1534.0
+    },
+    {
+      "year": 2024,
+      "county": "Donegal",
+      "avg_monthly_rent_eur": 956.0
+    },
+    {
+      "year": 2024,
+      "county": "Dublin",
+      "avg_monthly_rent_eur": 2401.0
+    },
+    {
+      "year": 2024,
+      "county": "Galway",
+      "avg_monthly_rent_eur": 1678.0
+    },
+    {
+      "year": 2024,
+      "county": "Kerry",
+      "avg_monthly_rent_eur": 1345.0
+    },
+    {
+      "year": 2024,
+      "county": "Kildare",
+      "avg_monthly_rent_eur": 1723.0
+    },
+    {
+      "year": 2024,
+      "county": "Kilkenny",
+      "avg_monthly_rent_eur": 1134.0
+    },
+    {
+      "year": 2024,
+      "county": "Laois",
+      "avg_monthly_rent_eur": 978.0
+    },
+    {
+      "year": 2024,
+      "county": "Leitrim",
+      "avg_monthly_rent_eur": 901.0
+    },
+    {
+      "year": 2024,
+      "county": "Limerick",
+      "avg_monthly_rent_eur": 1312.0
+    },
+    {
+      "year": 2024,
+      "county": "Mayo",
+      "avg_monthly_rent_eur": 1012.0
+    },
+    {
+      "year": 2024,
+      "county": "Meath",
+      "avg_monthly_rent_eur": 1689.0
+    },
+    {
+      "year": 2024,
+      "county": "Offaly",
+      "avg_monthly_rent_eur": 956.0
+    },
+    {
+      "year": 2024,
+      "county": "Roscommon",
+      "avg_monthly_rent_eur": 934.0
+    },
+    {
+      "year": 2024,
+      "county": "Sligo",
+      "avg_monthly_rent_eur": 989.0
+    },
+    {
+      "year": 2024,
+      "county": "Tipperary",
+      "avg_monthly_rent_eur": 1001.0
+    },
+    {
+      "year": 2024,
+      "county": "Waterford",
+      "avg_monthly_rent_eur": 1167.0
+    },
+    {
+      "year": 2024,
+      "county": "Wexford",
+      "avg_monthly_rent_eur": 1112.0
+    },
+    {
+      "year": 2024,
+      "county": "Wicklow",
+      "avg_monthly_rent_eur": 1789.0
+    }
+  ],
+  "finding": "After excluding COVID years (structural break), tourist volume and time trend explain 98% of national rent variation. As visits recovered to pre-COVID levels, rents accelerated \u2014 driven by housing stock converted to short-term tourist accommodation.",
+  "data_sources": "CSO TMQ02 + RTB/ESRI Rent Index"
+}

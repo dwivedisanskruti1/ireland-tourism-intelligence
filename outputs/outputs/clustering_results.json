@@ -1,0 +1,425 @@
+{
+  "origin_shares_2024": {
+    "Great Britain": 45.24,
+    "Other Areas": 5.23,
+    "Other Europe": 35.36,
+    "USA and Canada": 14.18
+  },
+  "origin_shares_2015": {
+    "Great Britain": 46.82,
+    "Other Areas": 4.9,
+    "Other Europe": 34.56,
+    "USA and Canada": 13.72
+  },
+  "origin_change_pp": {
+    "Great Britain": -1.58,
+    "Other Areas": 0.32,
+    "Other Europe": 0.8,
+    "USA and Canada": 0.46
+  },
+  "year_eras": [
+    {
+      "year": 2009,
+      "era_label": "\ud83d\udcc8 Growth Era",
+      "total_visits": 6635000
+    },
+    {
+      "year": 2010,
+      "era_label": "\ud83d\udcc8 Growth Era",
+      "total_visits": 6730000
+    },
+    {
+      "year": 2011,
+      "era_label": "\ud83d\udcc8 Growth Era",
+      "total_visits": 7050000
+    },
+    {
+      "year": 2012,
+      "era_label": "\ud83d\udcc8 Growth Era",
+      "total_visits": 7322000
+    },
+    {
+      "year": 2013,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 7600000
+    },
+    {
+      "year": 2014,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 7973000
+    },
+    {
+      "year": 2015,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 8261000
+    },
+    {
+      "year": 2016,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 8532000
+    },
+    {
+      "year": 2017,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 8808000
+    },
+    {
+      "year": 2018,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 9080000
+    },
+    {
+      "year": 2019,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 9356000
+    },
+    {
+      "year": 2020,
+      "era_label": "\ud83d\udcc8 Growth Era",
+      "total_visits": 1823000
+    },
+    {
+      "year": 2021,
+      "era_label": "\ud83d\udcc9 COVID Era",
+      "total_visits": 2441000
+    },
+    {
+      "year": 2022,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 7681000
+    },
+    {
+      "year": 2023,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 9090000
+    },
+    {
+      "year": 2024,
+      "era_label": "\ud83c\udfc6 Peak Era",
+      "total_visits": 9262000
+    }
+  ],
+  "annual_by_origin": [
+    {
+      "year": 2009,
+      "origin": "Great Britain",
+      "total_visits": 3302000
+    },
+    {
+      "year": 2009,
+      "origin": "Other Areas",
+      "total_visits": 297000
+    },
+    {
+      "year": 2009,
+      "origin": "Other Europe",
+      "total_visits": 2167000
+    },
+    {
+      "year": 2009,
+      "origin": "USA and Canada",
+      "total_visits": 869000
+    },
+    {
+      "year": 2010,
+      "origin": "Great Britain",
+      "total_visits": 3263000
+    },
+    {
+      "year": 2010,
+      "origin": "Other Areas",
+      "total_visits": 313000
+    },
+    {
+      "year": 2010,
+      "origin": "Other Europe",
+      "total_visits": 2250000
+    },
+    {
+      "year": 2010,
+      "origin": "USA and Canada",
+      "total_visits": 904000
+    },
+    {
+      "year": 2011,
+      "origin": "Great Britain",
+      "total_visits": 3412000
+    },
+    {
+      "year": 2011,
+      "origin": "Other Areas",
+      "total_visits": 330000
+    },
+    {
+      "year": 2011,
+      "origin": "Other Europe",
+      "total_visits": 2369000
+    },
+    {
+      "year": 2011,
+      "origin": "USA and Canada",
+      "total_visits": 939000
+    },
+    {
+      "year": 2012,
+      "origin": "Great Britain",
+      "total_visits": 3495000
+    },
+    {
+      "year": 2012,
+      "origin": "Other Areas",
+      "total_visits": 349000
+    },
+    {
+      "year": 2012,
+      "origin": "Other Europe",
+      "total_visits": 2490000
+    },
+    {
+      "year": 2012,
+      "origin": "USA and Canada",
+      "total_visits": 988000
+    },
+    {
+      "year": 2013,
+      "origin": "Great Britain",
+      "total_visits": 3584000
+    },
+    {
+      "year": 2013,
+      "origin": "Other Areas",
+      "total_visits": 367000
+    },
+    {
+      "year": 2013,
+      "origin": "Other Europe",
+      "total_visits": 2612000
+    },
+    {
+      "year": 2013,
+      "origin": "USA and Canada",
+      "total_visits": 1037000
+    },
+    {
+      "year": 2014,
+      "origin": "Great Britain",
+      "total_visits": 3769000
+    },
+    {
+      "year": 2014,
+      "origin": "Other Areas",
+      "total_visits": 386000
+    },
+    {
+      "year": 2014,
+      "origin": "Other Europe",
+      "total_visits": 2733000
+    },
+    {
+      "year": 2014,
+      "origin": "USA and Canada",
+      "total_visits": 1085000
+    },
+    {
+      "year": 2015,
+      "origin": "Great Britain",
+      "total_visits": 3868000
+    },
+    {
+      "year": 2015,
+      "origin": "Other Areas",
+      "total_visits": 405000
+    },
+    {
+      "year": 2015,
+      "origin": "Other Europe",
+      "total_visits": 2855000
+    },
+    {
+      "year": 2015,
+      "origin": "USA and Canada",
+      "total_visits": 1133000
+    },
+    {
+      "year": 2016,
+      "origin": "Great Britain",
+      "total_visits": 3950000
+    },
+    {
+      "year": 2016,
+      "origin": "Other Areas",
+      "total_visits": 425000
+    },
+    {
+      "year": 2016,
+      "origin": "Other Europe",
+      "total_visits": 2976000
+    },
+    {
+      "year": 2016,
+      "origin": "USA and Canada",
+      "total_visits": 1181000
+    },
+    {
+      "year": 2017,
+      "origin": "Great Britain",
+      "total_visits": 4031000
+    },
+    {
+      "year": 2017,
+      "origin": "Other Areas",
+      "total_visits": 448000
+    },
+    {
+      "year": 2017,
+      "origin": "Other Europe",
+      "total_visits": 3098000
+    },
+    {
+      "year": 2017,
+      "origin": "USA and Canada",
+      "total_visits": 1231000
+    },
+    {
+      "year": 2018,
+      "origin": "Great Britain",
+      "total_visits": 4111000
+    },
+    {
+      "year": 2018,
+      "origin": "Other Areas",
+      "total_visits": 470000
+    },
+    {
+      "year": 2018,
+      "origin": "Other Europe",
+      "total_visits": 3219000
+    },
+    {
+      "year": 2018,
+      "origin": "USA and Canada",
+      "total_visits": 1280000
+    },
+    {
+      "year": 2019,
+      "origin": "Great Britain",
+      "total_visits": 4193000
+    },
+    {
+      "year": 2019,
+      "origin": "Other Areas",
+      "total_visits": 493000
+    },
+    {
+      "year": 2019,
+      "origin": "Other Europe",
+      "total_visits": 3341000
+    },
+    {
+      "year": 2019,
+      "origin": "USA and Canada",
+      "total_visits": 1329000
+    },
+    {
+      "year": 2020,
+      "origin": "Great Britain",
+      "total_visits": 973000
+    },
+    {
+      "year": 2020,
+      "origin": "Other Areas",
+      "total_visits": 81000
+    },
+    {
+      "year": 2020,
+      "origin": "Other Europe",
+      "total_visits": 573000
+    },
+    {
+      "year": 2020,
+      "origin": "USA and Canada",
+      "total_visits": 196000
+    },
+    {
+      "year": 2021,
+      "origin": "Great Britain",
+      "total_visits": 1191000
+    },
+    {
+      "year": 2021,
+      "origin": "Other Areas",
+      "total_visits": 139000
+    },
+    {
+      "year": 2021,
+      "origin": "Other Europe",
+      "total_visits": 699000
+    },
+    {
+      "year": 2021,
+      "origin": "USA and Canada",
+      "total_visits": 412000
+    },
+    {
+      "year": 2022,
+      "origin": "Great Britain",
+      "total_visits": 3480000
+    },
+    {
+      "year": 2022,
+      "origin": "Other Areas",
+      "total_visits": 430000
+    },
+    {
+      "year": 2022,
+      "origin": "Other Europe",
+      "total_visits": 2613000
+    },
+    {
+      "year": 2022,
+      "origin": "USA and Canada",
+      "total_visits": 1158000
+    },
+    {
+      "year": 2023,
+      "origin": "Great Britain",
+      "total_visits": 4136000
+    },
+    {
+      "year": 2023,
+      "origin": "Other Areas",
+      "total_visits": 472000
+    },
+    {
+      "year": 2023,
+      "origin": "Other Europe",
+      "total_visits": 3202000
+    },
+    {
+      "year": 2023,
+      "origin": "USA and Canada",
+      "total_visits": 1280000
+    },
+    {
+      "year": 2024,
+      "origin": "Great Britain",
+      "total_visits": 4190000
+    },
+    {
+      "year": 2024,
+      "origin": "Other Areas",
+      "total_visits": 484000
+    },
+    {
+      "year": 2024,
+      "origin": "Other Europe",
+      "total_visits": 3275000
+    },
+    {
+      "year": 2024,
+      "origin": "USA and Canada",
+      "total_visits": 1313000
+    }
+  ],
+  "data_source": "CSO Ireland PxStat API \u2014 TMQ02"
+}

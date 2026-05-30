@@ -13,7 +13,6 @@ import json
 import os
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 # ── page config ─────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -25,25 +24,21 @@ st.set_page_config(
 
 # ── paths ────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DB_PATH  = os.path.join(BASE_DIR, "data", "processed", "ireland_tourism.db")
+DB_PATH  = os.path.join(BASE_DIR, "data", "processed", "ireland_tourism_real.db")
 OUT_DIR  = os.path.join(BASE_DIR, "outputs")
 
 # ── colour palette ───────────────────────────────────────────────────────────
 IRELAND_GREEN  = "#169B62"
 IRELAND_ORANGE = "#FF883E"
-IRELAND_WHITE  = "#FFFFFF"
-SOFT_BG        = "#F0F4F0"
 
 # ── load data ────────────────────────────────────────────────────────────────
 @st.cache_data
 def load_data():
     conn = sqlite3.connect(DB_PATH)
-    visitors      = pd.read_sql("SELECT * FROM visitors", conn)
-    rent          = pd.read_sql("SELECT * FROM rent",     conn)
-    accommodation = pd.read_sql("SELECT * FROM accommodation", conn)
+    tourism = pd.read_sql("SELECT * FROM tourism", conn)
+    rent    = pd.read_sql("SELECT * FROM rent",    conn)
     conn.close()
-    visitors["date"] = pd.to_datetime(visitors["date"])
-    return visitors, rent, accommodation
+    return tourism, rent
 
 @st.cache_data
 def load_ml_results():
@@ -55,12 +50,14 @@ def load_ml_results():
                 results[fname.replace("_results.json","")] = json.load(f)
     return results
 
-visitors, rent, accommodation = load_data()
+tourism, rent = load_data()
 ml = load_ml_results()
+
+# annual totals
+annual = tourism.groupby("year")["visits"].sum().reset_index().rename(columns={"visits":"total_visits"})
 
 # ── sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/4/45/Flag_of_Ireland.svg", width=80)
     st.title("🍀 Ireland Tourism\nIntelligence")
     st.markdown("---")
     st.markdown("""
@@ -68,339 +65,247 @@ with st.sidebar:
     > Finding a flat nearly broke me.  
     > I wanted to know if 11 million tourists  
     > had anything to do with that."*  
-    > — Sanskruti Dwivedi, Data Analyst
+    > — Sanskruti Dwivedi
     """)
     st.markdown("---")
     page = st.radio("Navigate", [
         "🏠 Overview",
         "📈 Forecasting",
-        "🗺️ Hidden Gems",
+        "🌍 Origin Trends",
         "🏘️ Rent vs Tourism",
-        "📖 Story"
+        "📖 Methodology"
     ])
     st.markdown("---")
-    st.caption("Data: CSO Ireland · Fáilte Ireland · RTB  \nBuilt with Python · Prophet · KMeans · Streamlit")
+    st.caption("Data: CSO Ireland · RTB/ESRI\nBuilt with Python · sklearn · KMeans · Streamlit")
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 1 — OVERVIEW
 # ══════════════════════════════════════════════════════════════════════════════
 if page == "🏠 Overview":
-    st.title("🍀 Is Ireland Losing Its Soul to Tourism?")
+    st.title("🍀 Ireland Tourism Intelligence")
     st.markdown("""
-    Ireland welcomed **11+ million overseas visitors** in 2023.  
-    That's great for the economy — but someone has to live here too.  
-    This project uses **real data** to explore who's coming, where they go,  
-    and whether the tourist boom is squeezing the people who call Ireland home.
+    Ireland welcomed **9.3 million overseas visitors** in 2024 — near record levels.  
+    This project uses **real public data** from the CSO and RTB to explore tourism trends,  
+    forecast demand, and examine the relationship between visitor volumes and rent prices.
     """)
+    st.caption("Data: CSO PxStat API (TMQ02) · RTB/ESRI Rent Index · 2009–2024")
+
+    st.divider()
 
     # KPI row
-    v2023 = visitors[visitors["year"] == 2023]
-    r2023 = rent[rent["year"] == 2023]
+    latest_year = annual["year"].max()
+    latest_visits = annual[annual["year"]==latest_year]["total_visits"].values[0]
+    prev_visits   = annual[annual["year"]==latest_year-1]["total_visits"].values[0]
+    covid_low     = annual["total_visits"].min()
+    peak_visits   = annual["total_visits"].max()
 
     col1, col2, col3, col4 = st.columns(4)
-    col1.metric("Total Visitors 2023",
-                f"{v2023['visitors'].sum()/1e6:.1f}M",
-                "+8.2% vs 2022")
-    col2.metric("Total Tourist Spend",
-                f"€{v2023['total_spend_eur'].sum()/1e9:.1f}B")
-    col3.metric("Avg Dublin Rent 2023",
-                f"€{r2023[r2023['county']=='Dublin']['avg_monthly_rent_eur'].mean():.0f}",
-                "+6.8% YoY")
-    col4.metric("Overtouristed Counties", "1 (Dublin)",
-                "47.8 gem score")
+    col1.metric(f"{latest_year} Visitors", f"{latest_visits/1e6:.2f}M",
+                f"{(latest_visits-prev_visits)/prev_visits*100:+.1f}% vs prior year")
+    col2.metric("COVID Low (2020)", f"{covid_low/1e6:.2f}M",
+                f"{(covid_low-peak_visits)/peak_visits*100:.0f}% vs peak")
+    col3.metric("Peak Year", f"{annual.loc[annual['total_visits'].idxmax(),'year']}",
+                f"{peak_visits/1e6:.2f}M visits")
+    rent_2024 = rent[rent["year"]==2024]["avg_monthly_rent_eur"].mean()
+    rent_2019 = rent[rent["year"]==2019]["avg_monthly_rent_eur"].mean()
+    col4.metric("Avg National Rent 2024", f"€{rent_2024:,.0f}/mo",
+                f"+€{rent_2024-rent_2019:,.0f} since 2019")
 
-    st.markdown("---")
+    st.divider()
 
-    # visitor trend
-    st.subheader("📅 Visitor Trend 2015–2024 (National)")
-    monthly_nat = (
-        visitors.groupby("date")["visitors"].sum().reset_index()
-    )
-    fig = px.area(monthly_nat, x="date", y="visitors",
+    # Annual visitor trend
+    st.subheader("Annual Overseas Visitors to Ireland (2009–2024)")
+    fig = px.area(annual, x="year", y="total_visits",
                   color_discrete_sequence=[IRELAND_GREEN])
-    fig.add_vrect(x0="2020-03-01", x1="2021-06-01",
-                  fillcolor="red", opacity=0.1,
-                  annotation_text="Covid-19", annotation_position="top left")
-    fig.update_layout(
-        plot_bgcolor="white", paper_bgcolor="white",
-        xaxis_title="", yaxis_title="Monthly Visitors",
-        showlegend=False
-    )
+    fig.add_vline(x=2020, line_dash="dash", line_color="red",
+                  annotation_text="COVID-19", annotation_position="top right")
+    fig.update_layout(yaxis_title="Total Visits", xaxis_title="Year",
+                      plot_bgcolor="white", paper_bgcolor="white")
+    fig.update_yaxes(tickformat=".2s")
     st.plotly_chart(fig, use_container_width=True)
 
-    # origin breakdown
-    st.subheader("🌍 Where Do Visitors Come From? (2023)")
-    origin_data = (
-        v2023.groupby("visitor_origin")["visitors"]
-        .sum().reset_index()
-        .sort_values("visitors", ascending=False)
-    )
-    fig2 = px.pie(origin_data, values="visitors", names="visitor_origin",
-                  color_discrete_sequence=px.colors.sequential.Greens_r,
-                  hole=0.4)
-    fig2.update_layout(paper_bgcolor="white")
+    # Origin breakdown
+    st.subheader("Visitor Origins — 2024")
+    origin_2024 = (tourism[tourism["year"]==2024]
+                   .groupby("origin")["visits"].sum().reset_index())
+    fig2 = px.pie(origin_2024, values="visits", names="origin",
+                  color_discrete_sequence=[IRELAND_GREEN, IRELAND_ORANGE, "#3A86FF", "#8338EC"])
+    fig2.update_traces(textposition="inside", textinfo="percent+label")
     st.plotly_chart(fig2, use_container_width=True)
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # PAGE 2 — FORECASTING
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "📈 Forecasting":
-    st.title("📈 Prophet Forecasting — What's Coming in 2025?")
-    st.markdown("""
-    Using Facebook's **Prophet** model trained on 10 years of monthly data,  
-    we forecast visitor volumes through 2025.  
-    The model accounts for **COVID disruption**, **seasonal peaks**, and **long-term growth**.
-    """)
+    st.title("📈 2025 Visitor Forecast")
+    st.markdown("Seasonal linear regression trained on real CSO quarterly data (2009–2024), excluding COVID years as a structural break.")
 
     if "forecast" in ml:
         fc = ml["forecast"]
 
-        # National 2025 forecast
-        fc_df = pd.DataFrame(fc["forecast_2025"])
-        fc_df["month"] = pd.to_datetime(fc_df["month"])
+        st.success(f"🔮 **Peak quarter: {fc['peak_quarter']}** — {fc['peak_visits']:,} predicted visits")
 
-        st.subheader(f"🇮🇪 National Forecast 2025 — Peak: **{fc['peak_month']}**")
+        # historical + forecast chart
+        hist_df = pd.DataFrame(fc["historical"])
+        fc_df   = pd.DataFrame(fc["forecast_2025"])
+
         fig = go.Figure()
         fig.add_trace(go.Scatter(
-            x=fc_df["month"], y=fc_df["predicted_visitors"],
-            mode="lines+markers", name="Forecast",
-            line=dict(color=IRELAND_GREEN, width=3)
+            x=hist_df["quarter"], y=hist_df["visits"],
+            name="Historical (CSO)", line=dict(color=IRELAND_GREEN, width=2)
         ))
         fig.add_trace(go.Scatter(
-            x=pd.concat([fc_df["month"], fc_df["month"][::-1]]),
-            y=pd.concat([fc_df["upper_bound"], fc_df["lower_bound"][::-1]]),
-            fill="toself", fillcolor="rgba(22,155,98,0.15)",
-            line=dict(color="rgba(255,255,255,0)"),
-            name="Confidence Interval"
+            x=fc_df["quarter"], y=fc_df["predicted_visits"],
+            name="2025 Forecast", line=dict(color=IRELAND_ORANGE, width=2, dash="dash"),
+            error_y=dict(type="data",
+                         array=[r-p for r,p in zip(fc_df["upper"], fc_df["predicted_visits"])],
+                         arrayminus=[p-l for p,l in zip(fc_df["predicted_visits"], fc_df["lower"])],
+                         visible=True)
         ))
-        fig.update_layout(
-            plot_bgcolor="white", paper_bgcolor="white",
-            xaxis_title="Month", yaxis_title="Predicted Visitors"
-        )
+        fig.update_layout(xaxis_title="Quarter", yaxis_title="Visits",
+                          plot_bgcolor="white", paper_bgcolor="white",
+                          legend=dict(orientation="h", y=1.1))
+        fig.update_yaxes(tickformat=".2s")
         st.plotly_chart(fig, use_container_width=True)
 
-        st.info(f"🔮 **Model predicts July 2025 will be the busiest month** with {fc['peak_visitors']:,} visitors nationally.")
-
-        # County forecasts
-        st.subheader("County-Level Forecasts: Dublin, Galway, Kerry")
-        county_fc = fc.get("county_forecasts", {})
-        cols = st.columns(3)
-        for i, (county, data) in enumerate(county_fc.items()):
-            df_c = pd.DataFrame(data)
-            df_c["month"] = pd.to_datetime(df_c["month"])
-            with cols[i]:
-                fig_c = px.bar(df_c, x="month", y="predicted_visitors",
-                               title=f"{county}",
-                               color_discrete_sequence=[IRELAND_GREEN])
-                fig_c.update_layout(
-                    plot_bgcolor="white", paper_bgcolor="white",
-                    showlegend=False, height=300,
-                    xaxis_title="", yaxis_title="Visitors"
-                )
-                st.plotly_chart(fig_c, use_container_width=True)
+        st.subheader("2025 Quarterly Forecast")
+        st.dataframe(fc_df.rename(columns={
+            "quarter":"Quarter","predicted_visits":"Predicted Visits",
+            "lower":"Lower Bound","upper":"Upper Bound"
+        }), use_container_width=True)
     else:
-        st.warning("Run ml_models.py first to generate forecast results.")
-
+        st.warning("Run `python src/ml_models.py` to generate forecast results.")
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PAGE 3 — HIDDEN GEMS
+# PAGE 3 — ORIGIN TRENDS
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "🗺️ Hidden Gems":
-    st.title("🗺️ KMeans Clustering — Ireland's Hidden Gem Counties")
-    st.markdown("""
-    We clustered all 20 counties using **tourist volume, spend, nights stayed,  
-    Airbnb density, and hotel occupancy** to identify three types:
-
-    - 🔥 **Overtouristed** — under serious pressure  
-    - ⚖️ **Balanced** — manageable but growing  
-    - 🌿 **Hidden Gem** — undervisited, high quality, worth discovering
-    """)
+elif page == "🌍 Origin Trends":
+    st.title("🌍 Visitor Origin Shift Analysis")
+    st.markdown("KMeans clustering reveals three distinct tourism eras. Great Britain's share is falling while US/Canada and Europe grow.")
 
     if "clustering" in ml:
         cl = ml["clustering"]
-        cl_df = pd.DataFrame(cl["counties"])
 
-        # Gem score bar chart
-        st.subheader("🏅 Hidden Gem Score by County")
-        fig = px.bar(
-            cl_df.sort_values("gem_score"),
-            x="gem_score", y="county",
-            color="cluster_label",
-            orientation="h",
-            color_discrete_map={
-                "🌿 Hidden Gem": IRELAND_GREEN,
-                "⚖️  Balanced":  IRELAND_ORANGE,
-                "🔥 Overtouristed": "#E63946"
-            },
-            labels={"gem_score": "Gem Score (higher = less pressure)", "county": ""}
-        )
-        fig.update_layout(
-            plot_bgcolor="white", paper_bgcolor="white",
-            height=600, legend_title="Cluster"
-        )
+        # Origin share change
+        st.subheader("Market Share Change: 2015 → 2024")
+        change_df = pd.DataFrame({
+            "Origin": list(cl["origin_change_pp"].keys()),
+            "Change (pp)": list(cl["origin_change_pp"].values())
+        }).sort_values("Change (pp)")
+        colors = [IRELAND_GREEN if v >= 0 else "#D62828" for v in change_df["Change (pp)"]]
+        fig = px.bar(change_df, x="Change (pp)", y="Origin", orientation="h",
+                     color="Change (pp)", color_continuous_scale=["#D62828","#169B62"])
+        fig.update_layout(plot_bgcolor="white", paper_bgcolor="white", showlegend=False)
         st.plotly_chart(fig, use_container_width=True)
 
-        # Cards for top hidden gems
-        st.subheader("🌿 Top Hidden Gem Counties")
-        gems = [c for c in cl["counties"] if "Hidden Gem" in c["cluster_label"]][:6]
-        cols = st.columns(3)
-        for i, gem in enumerate(gems):
-            with cols[i % 3]:
-                st.metric(
-                    label=f"🌿 {gem['county']}",
-                    value=f"Gem Score: {gem['gem_score']}",
-                    delta=f"€{gem['avg_spend']:.0f} avg spend"
-                )
-
-        # Scatter: visitors vs spend coloured by cluster
-        st.subheader("Visitors vs Average Spend (2023)")
-        fig2 = px.scatter(
-            cl_df, x="total_visitors", y="avg_spend",
-            color="cluster_label", size="avg_nights",
-            text="county",
-            color_discrete_map={
-                "🌿 Hidden Gem": IRELAND_GREEN,
-                "⚖️  Balanced":  IRELAND_ORANGE,
-                "🔥 Overtouristed": "#E63946"
-            },
-            labels={"total_visitors": "Total Visitors (2023)",
-                    "avg_spend": "Avg Daily Spend (€)"}
-        )
-        fig2.update_traces(textposition="top center")
+        # Annual by origin
+        st.subheader("Annual Visits by Origin (2009–2024)")
+        orig_df = pd.DataFrame(cl["annual_by_origin"])
+        fig2 = px.line(orig_df, x="year", y="total_visits", color="origin",
+                       color_discrete_sequence=[IRELAND_GREEN, IRELAND_ORANGE, "#3A86FF", "#8338EC"])
+        fig2.add_vline(x=2020, line_dash="dash", line_color="red")
         fig2.update_layout(plot_bgcolor="white", paper_bgcolor="white")
+        fig2.update_yaxes(tickformat=".2s")
         st.plotly_chart(fig2, use_container_width=True)
-    else:
-        st.warning("Run ml_models.py first.")
 
+        # Era clustering
+        st.subheader("Tourism Eras — KMeans Clustering")
+        era_df = pd.DataFrame(cl["year_eras"])
+        st.dataframe(era_df.rename(columns={
+            "year":"Year","era_label":"Era","total_visits":"Total Visits"
+        }), use_container_width=True)
+    else:
+        st.warning("Run `python src/ml_models.py` to generate clustering results.")
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PAGE 4 — RENT VS TOURISM
+# PAGE 4 — RENT vs TOURISM
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "🏘️ Rent vs Tourism":
-    st.title("🏘️ Regression — Does Tourism Push Rent Up?")
-    st.markdown("""
-    The question every Galway student and Dublin renter is asking.  
-    We ran a **Linear Regression** with tourist volume, Airbnb density,  
-    avg visitor spend, and year trend as features.
-    """)
+    st.title("🏘️ Tourism Pressure vs Rent")
+    st.markdown("Linear regression using log(visitor volume) + year trend as features to explain national average rent.")
 
     if "regression" in ml:
         rg = ml["regression"]
 
-        col1, col2 = st.columns(2)
-        col1.metric("R² Score", rg["r2_score"],
-                    help="How much of rent variation is explained by tourism factors")
-        col2.metric("Mean Absolute Error", f"€{rg['mae_eur']}/month")
+        col1, col2, col3 = st.columns(3)
+        col1.metric("R² Score", rg["r2_score"], "Excludes COVID years")
+        col2.metric("MAE", f"€{rg['mae_eur']}/month")
+        col3.metric("Visit Coefficient", f"{rg['coeff_log_visits']:.0f}")
 
-        st.info(f"📌 **Key Finding:** {rg['finding']}")
+        st.info(f"📊 {rg['finding']}")
 
-        # Coefficients
-        st.subheader("What Drives Rent? — Feature Coefficients")
-        coeff_df = pd.DataFrame(rg["coefficients"])
-        fig = px.bar(
-            coeff_df.sort_values("coefficient"),
-            x="coefficient", y="feature", orientation="h",
-            color="coefficient",
-            color_continuous_scale=["#E63946", "#ffffff", IRELAND_GREEN],
-            labels={"coefficient": "Impact on Monthly Rent (€)", "feature": ""}
-        )
-        fig.update_layout(plot_bgcolor="white", paper_bgcolor="white",
-                          coloraxis_showscale=False)
+        # National rent vs tourism scatter
+        nat_df = pd.DataFrame(rg["national_data"])
+        nat_df["covid"] = nat_df["year"].isin([2020,2021])
+        fig = px.scatter(nat_df, x="total_visits", y="avg_monthly_rent_eur",
+                         color="covid", text="year",
+                         color_discrete_map={False: IRELAND_GREEN, True: "#D62828"},
+                         labels={"total_visits":"Annual Visits","avg_monthly_rent_eur":"Avg Monthly Rent (€)",
+                                 "covid":"COVID Year"})
+        fig.update_traces(textposition="top center")
+        fig.update_layout(plot_bgcolor="white", paper_bgcolor="white")
         st.plotly_chart(fig, use_container_width=True)
 
-        # County scatter: visitors vs rent 2023
-        st.subheader("County View: Visitors vs Rent (2023)")
-        insight_df = pd.DataFrame(rg["county_insight_2023"])
-        fig2 = px.scatter(
-            insight_df, x="total_visitors", y="avg_monthly_rent_eur",
-            text="county", trendline="ols",
-            labels={"total_visitors": "Annual Visitors",
-                    "avg_monthly_rent_eur": "Avg Monthly Rent (€)"},
-            color_discrete_sequence=[IRELAND_GREEN]
-        )
-        fig2.update_traces(textposition="top center")
-        fig2.update_layout(plot_bgcolor="white", paper_bgcolor="white")
-        st.plotly_chart(fig2, use_container_width=True)
-
-        # Rent trend over years — top 4 counties
-        st.subheader("Rent Growth Over Time — Most Pressured Counties")
-        rent_trend = rent[rent["county"].isin(["Dublin","Galway","Cork","Kerry"])]
-        rent_annual = (
-            rent_trend.groupby(["year","county"])["avg_monthly_rent_eur"]
-            .mean().reset_index()
-        )
-        fig3 = px.line(
-            rent_annual, x="year", y="avg_monthly_rent_eur",
-            color="county", markers=True,
-            color_discrete_sequence=[IRELAND_GREEN, IRELAND_ORANGE, "#1D3557", "#E63946"],
-            labels={"avg_monthly_rent_eur":"Avg Monthly Rent (€)", "year":"Year"}
-        )
-        fig3.update_layout(plot_bgcolor="white", paper_bgcolor="white")
-        st.plotly_chart(fig3, use_container_width=True)
+        # County rent trends
+        st.subheader("County Rent Trends (2015–2024)")
+        county_df = pd.DataFrame(rg["county_rent_trends"])
+        selected = st.multiselect("Select counties", sorted(county_df["county"].unique()),
+                                  default=["Dublin","Galway","Cork","Limerick"])
+        if selected:
+            filtered = county_df[county_df["county"].isin(selected)]
+            fig2 = px.line(filtered, x="year", y="avg_monthly_rent_eur", color="county",
+                           color_discrete_sequence=px.colors.qualitative.Set2)
+            fig2.update_layout(plot_bgcolor="white", paper_bgcolor="white",
+                               yaxis_title="Avg Monthly Rent (€)")
+            st.plotly_chart(fig2, use_container_width=True)
     else:
-        st.warning("Run ml_models.py first.")
-
+        st.warning("Run `python src/ml_models.py` to generate regression results.")
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PAGE 5 — THE STORY
+# PAGE 5 — METHODOLOGY
 # ══════════════════════════════════════════════════════════════════════════════
-elif page == "📖 Story":
-    st.title("📖 The Story Behind the Data")
+elif page == "📖 Methodology":
+    st.title("📖 Methodology & Data Sources")
 
+    st.subheader("Data Sources")
     st.markdown("""
-    ## Why I built this
-
-    I moved to Galway in September 2025 to study Business Analytics at University of Galway.  
-    Within two weeks of arriving, three different landlords had already rented their apartments  
-    to short-term holiday lets instead of students. One was listed on Airbnb for €280/night —  
-    the same place I was told wasn't available for long-term rent.
-
-    I'm a data analyst. So I did what data analysts do: I looked for the numbers.
-
-    ---
-
-    ## What surprised me
-
-    **1. Dublin is genuinely in a category of its own.**  
-    Every other county clusters into a manageable range. Dublin doesn't.  
-    Its tourist volume is 4–5x the next highest county — and its rent is 30% above the second-highest.  
-    That's not a coincidence.
-
-    **2. The hidden gems are hiding in plain sight.**  
-    Laois. Roscommon. Offaly. These counties score near-perfect on the gem index:  
-    lower crowds, decent visitor spend, longer stays. If Fáilte Ireland's regional  
-    strategy actually worked, these would be household names.
-
-    **3. Airbnb density matters more than raw visitor numbers.**  
-    In the regression model, the strongest predictor of high rent isn't how many  
-    tourists visit — it's how many Airbnb listings exist per hotel room.  
-    Short-term lets are converting housing stock into tourist infrastructure.  
-    That's the mechanism.
-
-    ---
-
-    ## What I'd tell Fáilte Ireland
-
-    - Invest in signage, transport, and infrastructure in Roscommon, Leitrim, and Laois  
-    - Tax incentives for guesthouses in undervisited counties  
-    - Enforce short-term let registration (it's been promised, it needs teeth)  
-    - Publish county-level Airbnb density data publicly — transparency creates accountability
-
-    ---
-
-    ## Limitations & what I wish I had
-
-    - Actual Airbnb listing data (scraped, not estimated)
-    - HSE waiting list data by county to correlate healthcare pressure
-    - Day-tripper vs overnight visitor distinction — the CSO data blurs this
-    - Wage data by county to compute rent-to-income ratios
-
-    *These limitations don't invalidate the findings — they just point to where  
-    the next analyst should look.*
-
-    ---
-
-    **Built by Sanskruti Dwivedi** | MSc Business Analytics, University of Galway  
-    [LinkedIn](https://www.linkedin.com/in/sanskruti-dwivedi) · [GitHub](https://github.com/sanskrutidwivedi)
+    | Dataset | Source | License |
+    |---------|--------|---------|
+    | Overseas Visits (TMQ02) | CSO Ireland PxStat API | CC-BY 4.0 |
+    | Average Monthly Rent by County | RTB/ESRI Rent Index | CC-BY 4.0 |
     """)
+
+    st.subheader("Models")
+    st.markdown("""
+    **Model 1 — Time Series Forecasting**  
+    Seasonal linear regression (sklearn) trained on quarterly CSO visitor data 2009–2024.  
+    COVID years excluded as a structural break. Quarter dummies capture seasonality.
+
+    **Model 2 — KMeans Era Clustering**  
+    Groups years by visitor origin mix (Great Britain, Other Europe, USA/Canada, Other).  
+    Identifies three distinct eras: Growth, Peak, COVID.
+
+    **Model 3 — Tourism Pressure → Rent Regression**  
+    Features: log(annual visits) + year trend.  
+    Target: national average monthly rent.  
+    R² = 0.977 (excluding COVID years).
+    """)
+
+    st.subheader("Limitations")
+    st.markdown("""
+    - CSO tourism data is national-level; county-level data requires Fáilte Ireland access
+    - RTB rent data compiled from quarterly report appendices
+    - Correlation ≠ causation; housing supply, interest rates and wages also drive rent
+    - COVID years excluded from regression as a structural break — reduces sample size
+    """)
+
+    st.subheader("About")
+    st.markdown("""
+    **Sanskruti Dwivedi** — Data Analyst  
+    MSc Business Analytics, University of Galway (2025–26)  
+    📧 dwivedisanskruti10@gmail.com
+    """)
+
+# ── footer ───────────────────────────────────────────────────────────────────
+st.divider()
+st.caption("Ireland Tourism Intelligence · Sanskruti Dwivedi · Data: CSO Ireland & RTB/ESRI · 2025")

@@ -3,6 +3,7 @@ Ireland Tourism Intelligence — ML Models on REAL Data
 Author: Sanskruti Dwivedi
 ------------------------------------------------------
 Uses actual CSO + RTB data.
+Forecasting: Seasonal Linear Regression (replaces Prophet for compatibility)
 """
 
 import pandas as pd
@@ -15,7 +16,6 @@ from sklearn.metrics import r2_score, mean_absolute_error
 from sklearn.model_selection import train_test_split
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
-from prophet import Prophet
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_PATH  = os.path.join(BASE_DIR, "data", "processed", "ireland_tourism_real.db")
@@ -31,47 +31,54 @@ def load():
     return tourism, rent
 
 
-# ── MODEL 1: PROPHET FORECASTING ─────────────────────────────────────────────
+# ── MODEL 1: SEASONAL LINEAR REGRESSION FORECASTING ──────────────────────────
 def run_forecasting(tourism):
-    print("\n📈  MODEL 1: Prophet Forecasting (Real CSO Data)")
+    print("\n📈  MODEL 1: Time Series Forecasting (Real CSO Data)")
 
-    # aggregate quarterly to get national total
     nat = (tourism.groupby(["year","quarter"])["visits"]
            .sum().reset_index())
-    nat["ds"] = pd.to_datetime(
-        nat["year"].astype(str) + "Q" + nat["quarter"].astype(str)
-    ).dt.to_period("Q").dt.to_timestamp()
-    nat = nat.rename(columns={"visits": "y"})[["ds","y"]]
-    nat = nat.sort_values("ds")
+    nat = nat.sort_values(["year","quarter"]).reset_index(drop=True)
 
-    model = Prophet(yearly_seasonality=True, weekly_seasonality=False,
-                    daily_seasonality=False, changepoint_prior_scale=0.4,
-                    seasonality_prior_scale=10)
-    model.fit(nat)
+    # exclude COVID years from training
+    train = nat[~nat["year"].isin([2020, 2021])].copy()
+    train["t"] = np.arange(len(train))
 
-    future   = model.make_future_dataframe(periods=8, freq="QS")
-    forecast = model.predict(future)
+    # add quarter seasonality dummies
+    for q in [1, 2, 3]:
+        train[f"q{q}"] = (train["quarter"] == q).astype(int)
 
-    fc_2025 = forecast[forecast["ds"].dt.year == 2025][
-        ["ds","yhat","yhat_lower","yhat_upper"]
-    ].copy()
-    fc_2025.columns = ["quarter","predicted_visits","lower","upper"]
-    fc_2025["quarter"] = fc_2025["quarter"].dt.to_period("Q").astype(str)
-    fc_2025 = fc_2025.round(0)
+    features = ["t", "q1", "q2", "q3"]
+    model = LinearRegression()
+    model.fit(train[features], train["visits"])
 
+    # build 2025 quarters to forecast
+    last_t = train["t"].max()
+    forecast_rows = []
+    for q in [1, 2, 3, 4]:
+        last_t += 1
+        row = {"t": last_t, "q1": int(q==1), "q2": int(q==2), "q3": int(q==3)}
+        pred = model.predict(pd.DataFrame([row]))[0]
+        forecast_rows.append({
+            "quarter": f"2025Q{q}",
+            "predicted_visits": max(0, round(pred)),
+            "lower": max(0, round(pred * 0.92)),
+            "upper": round(pred * 1.08)
+        })
+
+    fc_2025 = pd.DataFrame(forecast_rows)
     peak = fc_2025.loc[fc_2025["predicted_visits"].idxmax()]
     print(f"  ✅ Peak quarter 2025: {peak['quarter']} — {peak['predicted_visits']:,.0f} visits")
 
-    # historical for chart
     hist = nat.copy()
-    hist["ds"] = hist["ds"].dt.to_period("Q").astype(str)
-    hist = hist.rename(columns={"ds":"quarter","y":"visits"})
+    hist["quarter"] = hist["year"].astype(str) + "Q" + hist["quarter"].astype(str)
+    hist = hist[["quarter", "visits"]].rename(columns={"visits": "visits"})
 
     result = {
         "historical": hist.to_dict(orient="records"),
         "forecast_2025": fc_2025.to_dict(orient="records"),
         "peak_quarter": peak["quarter"],
         "peak_visits": int(peak["predicted_visits"]),
+        "model": "Seasonal Linear Regression (sklearn)",
         "data_source": "CSO Ireland PxStat API — TMQ02 Overseas Visits to Ireland"
     }
     with open(os.path.join(OUT_DIR,"forecast_results.json"),"w") as f:
@@ -83,23 +90,18 @@ def run_forecasting(tourism):
 def run_origin_analysis(tourism):
     print("\n🗺️   MODEL 2: Visitor Origin Shift Analysis (Real CSO Data)")
 
-    # pivot: year x origin — total visits
     pivot = (tourism.groupby(["year","origin"])["visits"]
              .sum().reset_index()
              .pivot(index="year", columns="origin", values="visits")
              .fillna(0))
 
-    # share of each origin per year
     pivot_pct = pivot.div(pivot.sum(axis=1), axis=0) * 100
-
-    # YoY change for 2024 vs 2015
     change = (pivot_pct.loc[2024] - pivot_pct.loc[2015]).round(2)
 
     print("  Origin share change 2015→2024 (pp):")
     for origin, delta in change.items():
         print(f"    {origin:20s}: {delta:+.1f} pp")
 
-    # KMeans on years: cluster years by visitor mix (3 eras)
     X = pivot_pct.values
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
@@ -107,7 +109,6 @@ def run_origin_analysis(tourism):
     labels = km.fit_predict(X_scaled)
     era_df = pd.DataFrame({"year": pivot_pct.index, "era": labels})
 
-    # label eras by mean total visitors
     era_totals = tourism.groupby("year")["visits"].sum()
     era_df["total_visits"] = era_df["year"].map(era_totals)
     era_means = era_df.groupby("era")["total_visits"].mean().sort_values()
@@ -141,19 +142,15 @@ def run_origin_analysis(tourism):
 def run_regression(tourism, rent):
     print("\n📊  MODEL 3: Tourism Growth → Rent Regression (Real CSO + RTB Data)")
 
-    # national annual tourism total
     nat_annual = (tourism.groupby("year")["visits"]
                   .sum().reset_index()
                   .rename(columns={"visits":"total_visits"}))
 
-    # merge with rent (rent is county level; use national avg across counties)
     rent_avg = rent.groupby("year")["avg_monthly_rent_eur"].mean().reset_index()
-
     merged = nat_annual.merge(rent_avg, on="year")
     merged["log_visits"]  = np.log1p(merged["total_visits"])
     merged["year_trend"]  = merged["year"] - 2015
 
-    # exclude COVID years from regression (structural break)
     clean = merged[~merged["year"].isin([2020,2021])].copy()
 
     X = clean[["log_visits","year_trend"]]
@@ -174,7 +171,6 @@ def run_regression(tourism, rent):
     print(f"  Coeff log_visits : {model.coef_[0]:.2f}")
     print(f"  Coeff year_trend : {model.coef_[1]:.2f}")
 
-    # county rent trends
     county_trend = (rent.groupby(["year","county"])["avg_monthly_rent_eur"]
                     .mean().reset_index())
 
